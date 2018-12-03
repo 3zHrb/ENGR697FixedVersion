@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,7 +17,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+          FirebaseApp.configure()
+        
         return true
+    }
+    
+    override init() {
+        FirebaseApp.configure()
+        Database.database().isPersistenceEnabled = true
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

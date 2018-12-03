@@ -7,11 +7,18 @@
 //
 
 import UIKit
+import Firebase
 
 class FirstScreen: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+       if Auth.auth().currentUser != nil {
+            performSegue(withIdentifier: "toTheMain", sender: self)
+            
+            
+        }
 
         // Do any additional setup after loading the view.
     }
