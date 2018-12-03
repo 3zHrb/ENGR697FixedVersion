@@ -54,7 +54,7 @@ class ScanTableViewController: UITableViewController, CBCentralManagerDelegate {
         //manager?.scanForPeripherals(withServices: [CBUUID.init(string: parentView!.BLEService)], options: nil)
         
         //if you pass nil in the first parameter, then scanForPeriperals will look for any devices.
-        manager?.scanForPeripherals(withServices: nil, options: nil)
+        manager?.scanForPeripherals(withServices: [CBUUID.init(string: "DFB0")], options: nil)
         
         //stop scanning after 3 seconds
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
