@@ -38,12 +38,14 @@ PODS:
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
   - SVProgressHUD (2.2.5)
+  - SwiftChart (1.0.1)
 
 DEPENDENCIES:
   - Firebase
   - Firebase/Auth
   - Firebase/Database
   - SVProgressHUD
+  - SwiftChart
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -58,6 +60,7 @@ SPEC REPOS:
     - leveldb-library
     - nanopb
     - SVProgressHUD
+    - SwiftChart
 
 SPEC CHECKSUMS:
   Firebase: 68afeeb05461db02d7c9e3215cda28068670f4aa
@@ -71,7 +74,8 @@ SPEC CHECKSUMS:
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  SwiftChart: ba767a678d568a5ee22d419e146a0582865e1aff
 
-PODFILE CHECKSUM: d8a8bc00eaa9dfce1a2e401f06c2a895ee4560d3
+PODFILE CHECKSUM: 14fb5bdd4895b42067216b266a46881023154b58
 
 COCOAPODS: 1.5.3

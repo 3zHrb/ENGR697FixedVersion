@@ -16,7 +16,10 @@ class ScanTableViewController: UITableViewController, CBCentralManagerDelegate {
     var parentView:MainViewController? = nil
     
     override func viewDidLoad() {
-        super.viewDidLoad()    
+        super.viewDidLoad()
+        
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {

@@ -8,11 +8,19 @@
 
 import UIKit
 import CoreBluetooth
+import SwiftChart
+import Firebase
+
 
 class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
     var manager:CBCentralManager? = nil
     var mainPeripheral:CBPeripheral? = nil
     var mainCharacteristic:CBCharacteristic? = nil
+    
+    
+    let DB = Database.database().reference().child("heartrate")
+    
+    
     
     let BLEService = "DFB0"
     let BLECharacteristic = "DFB1"
@@ -24,7 +32,11 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
         
         manager = CBCentralManager(delegate: self, queue: nil);
         
+        
+     
         customiseNavigationBar()
+        
+        
     }
     
     func customiseNavigationBar () {
@@ -192,14 +204,82 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
         } else if (characteristic.uuid.uuidString == BLECharacteristic) {
             //data recieved
             if(characteristic.value != nil) {
+                
                 let stringValue = String(data: characteristic.value!, encoding: String.Encoding.utf8)!
+                
+                
+               
+                let test = String(stringValue.filter { !"\r\n".contains($0) })
+                
+                let stringToInt = Int(test)
+                
+               // var toInt = Int(stringValue)
+                
+                DB.childByAutoId().setValue(stringToInt)
+               
+                recievedMessageText.text = test                /*let data:Data = characteristic.value! //get a data object from the CBCharacteristic
+                let number = data.withUnsafeBytes {
+                    (pointer: UnsafePointer<Int>) -> Int in
+                    return pointer.pointee
+                }
+                
+                
+                print(number)
+                var stringText = String(number)
+                recievedMessageText.text = stringText
+                
+                 DB.childByAutoId().setValue(Int(number))
             
-                recievedMessageText.text = stringValue
+                //recievedMessageText.text = String(intValue)
+                
+                 }
+                
+                
+               // var heartRate: Int? = Int(stringValue)
+                
+                /*
+                DB.childByAutoId().setValue(stringValue)
+                
+                print()
+                DB.observe(.childAdded) { (DataSnapshot) in
+                    
+                    if let heartRateInteger = DataSnapshot.value as? Int{
+                        
+                        print(heartRateInteger)
+                        
+                        
+                    }
+                    
+                    /*if let heartRateString = DataSnapshot.value{
+                        
+                        print("/n")
+                        
+                        print(heartRateString)
+                        
+                        
+                    }*/
+                    */
+                    
+                    
+                   
+                   
+                    
+               
+                
+                
             }
         }
         
         
     }
-    
+
+ */
+ 
+
+
 }
+}
+}
+}
+
 
