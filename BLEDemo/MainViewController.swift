@@ -17,10 +17,15 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     var mainPeripheral:CBPeripheral? = nil
     var mainCharacteristic:CBCharacteristic? = nil
     
+    //var timer = Timer()
     
-    let DB = Database.database().reference().child("heartrate")
+        let DB = Database.database().reference()
     
     
+ 
+
+    
+
     
     let BLEService = "DFB0"
     let BLECharacteristic = "DFB1"
@@ -36,6 +41,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
      
         customiseNavigationBar()
         
+         /* timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTime), userInfo: nil, repeats: true)*/
         
     }
     
@@ -211,13 +217,16 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                
                 let test = String(stringValue.filter { !"\r\n".contains($0) })
                 
-                let stringToInt = Int(test)
+                if let stringToInt = Int(test){
+                
+                currentTime(theValue: stringToInt)
+                }
                 
                // var toInt = Int(stringValue)
                 
-                DB.childByAutoId().setValue(stringToInt)
+              
                
-                recievedMessageText.text = test                /*let data:Data = characteristic.value! //get a data object from the CBCharacteristic
+                recievedMessageText.text = stringValue              /*let data:Data = characteristic.value! //get a data object from the CBCharacteristic
                 let number = data.withUnsafeBytes {
                     (pointer: UnsafePointer<Int>) -> Int in
                     return pointer.pointee
@@ -280,6 +289,25 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
 }
 }
 }
+    
+   @objc func currentTime(theValue: Int){
+        
+        var date = Date()
+        var calendar = Calendar.current
+        var year = calendar.component(.year, from: date)
+        var month = calendar.component(.month, from: date)
+        var day = calendar.component(.day, from: date)
+        var hour = calendar.component(.hour, from: date)
+        var min = calendar.component(.minute, from: date)
+        var sec = calendar.component(.second, from: date)
+        
+        var child0 = DB.child("\(month)-\(day)-\(year)")
+        
+        let dataSaved = ["TimeStamp ": "\(hour):\(min):\(sec)", "HeartRate": "\(theValue)"]
+        
+        child0.childByAutoId().setValue(dataSaved)
+    }
+    
 }
 
 
