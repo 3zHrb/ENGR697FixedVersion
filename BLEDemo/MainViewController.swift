@@ -8,22 +8,77 @@
 
 import UIKit
 import CoreBluetooth
-import SwiftChart
 import Firebase
+//import AAInfographics
+//import JBChartView
+
+//import SwiftChartView
+
+//import Highcharts
+//import ScrollableGraphView
+//import ChartProgressBar
+
+//import AAInfographics
+//import SwiftCharts
+import Charts
+
+
 
 
 class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
+    
+  
+        
+   
+    
     var manager:CBCentralManager? = nil
     var mainPeripheral:CBPeripheral? = nil
     var mainCharacteristic:CBCharacteristic? = nil
     
     //var timer = Timer()
+      
+
+    var previousValue: Double? = nil
+    var currentValue: Double? = nil
+    var differenceHolder: Int? = nil
+    
+    
+    var icounter: Int? = nil
+    
+    var flag : Int = 0
+    
+    var tsFlagHolder = [String]()
+    
+    @IBOutlet weak var getDataButton: UIButton!
+    @IBOutlet weak var currentHeartRateLable: UILabel!
+    
+    
+    
+    let FlagTableViewObj: FlagTableView? = nil
+    
     
         let DB = Database.database().reference()
+    let ref = "https://engr697fixed.firebaseio.com"
+   
+    @IBOutlet weak var monthTextField: UITextField!
+    var m = String()
+    
+    @IBOutlet weak var dayTextField: UITextField!
+     var d = String()
+    
+    @IBOutlet weak var yearTextField: UITextField!
+     var y = String()
+    
+    @IBOutlet weak var getYourHeartActivitesOn: UILabel!
     
     
- 
-
+    
+    
+    @IBOutlet weak var FlagButton: UIButton!
+    
+    
+    @IBOutlet weak var lineChart1: LineChartView!
+    
     
 
     
@@ -35,15 +90,31 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     override func viewDidLoad() {
         super.viewDidLoad()
         
+       // getDataButton.setTitle("", for: [])
+       // getDataButton.isEnabled = false
+        
+        if(tsFlagHolder.isEmpty){
+            
+            FlagButton.setTitle("", for: [])
+            FlagButton.isEnabled = false
+            }
+        
+        
         manager = CBCentralManager(delegate: self, queue: nil);
         
+        print(DB)
         
+
      
         customiseNavigationBar()
         
+        //theChart()
          /* timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.currentTime), userInfo: nil, repeats: true)*/
         
     }
+    
+    
+   
     
     func customiseNavigationBar () {
         
@@ -80,6 +151,13 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             scanController.parentView = self
         }
         
+        if(segue.identifier == "toFlagTableView"){
+            
+            var flagTableView = segue.destination as! FlagTableView
+            flagTableView.TimeStampArray.append(contentsOf: tsFlagHolder)
+            
+        }
+        
     }
     
     // MARK: Button Methods
@@ -92,16 +170,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
         manager?.cancelPeripheralConnection(mainPeripheral!)
     }
     
-    @IBAction func sendButtonPressed(_ sender: AnyObject) {
-        let helloWorld = "Hello World!"
-        let dataToSend = helloWorld.data(using: String.Encoding.utf8)
-        
-        if (mainPeripheral != nil) {
-            mainPeripheral?.writeValue(dataToSend!, for: mainCharacteristic!, type: CBCharacteristicWriteType.withoutResponse)
-        } else {
-            print("haven't discovered device yet")
-        }
-    }
+  
     
     // MARK: - CBCentralManagerDelegate Methods    
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
@@ -211,22 +280,29 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             //data recieved
             if(characteristic.value != nil) {
                 
-                let stringValue = String(data: characteristic.value!, encoding: String.Encoding.utf8)!
+                if let valueFromBLE = String(data: characteristic.value!, encoding: String.Encoding.utf8){
                 
-                
-               
-                let test = String(stringValue.filter { !"\r\n".contains($0) })
-                
-                if let stringToInt = Int(test){
-                
-                currentTime(theValue: stringToInt)
+                let stringValue = valueFromBLE
+                    
+                    
+                    
+                    let test = String(stringValue.filter { !"\r\n".contains($0) })
+                    
+                    if let stringToInt = Int(test){
+                        
+                        currentTime(theValue: stringToInt)
+                    }
+                    
+                    // var toInt = Int(stringValue)
+                    
+                    
+                    
+                    recievedMessageText.text = stringValue
+                    
                 }
                 
-               // var toInt = Int(stringValue)
                 
-              
-               
-                recievedMessageText.text = stringValue              /*let data:Data = characteristic.value! //get a data object from the CBCharacteristic
+                            /*let data:Data = characteristic.value! //get a data object from the CBCharacteristic
                 let number = data.withUnsafeBytes {
                     (pointer: UnsafePointer<Int>) -> Int in
                     return pointer.pointee
@@ -290,24 +366,272 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
 }
 }
     
+    func timeSetter(){
+        
+        
+        
+        
+    }
+    
    @objc func currentTime(theValue: Int){
         
         var date = Date()
         var calendar = Calendar.current
-        var year = calendar.component(.year, from: date)
-        var month = calendar.component(.month, from: date)
-        var day = calendar.component(.day, from: date)
-        var hour = calendar.component(.hour, from: date)
-        var min = calendar.component(.minute, from: date)
-        var sec = calendar.component(.second, from: date)
+        var Year = calendar.component(.year, from: date)
+        var Month = calendar.component(.month, from: date)
+        var Day = calendar.component(.day, from: date)
+        var Hour = calendar.component(.hour, from: date)
+        var Min = calendar.component(.minute, from: date)
+        var Sec = calendar.component(.second, from: date)
         
-        var child0 = DB.child("\(month)-\(day)-\(year)")
+    var child0 = DB.child("\(Month)-\(Day)-\(Year)")
         
-        let dataSaved = ["TimeStamp ": "\(hour):\(min):\(sec)", "HeartRate": "\(theValue)"]
+    let dataSaved = ["TimeStamp ": "\(Hour):\(Min):\(Sec)", "HeartRate": "\(theValue)"]
         
         child0.childByAutoId().setValue(dataSaved)
+    
+    dataRetriever(year: Year, month: Month, day: Day, hour: Hour, min: Min, sec: Sec)
+    
     }
     
-}
+    func dataRetriever(year: Int, month: Int, day: Int, hour: Int, min: Int, sec: Int){
+        
+        
+        var heartRateArray = [Double]()
+        var TimeStamp = String()
+        
+        let child1 = DB.child("\(month)-\(day)-\(year)").observe(.childAdded) { (DataSnapshot) in
+            
+            let dataBaseValue = DataSnapshot.value as? Dictionary<String,String>
+            
+            if let timeStampDataBase = dataBaseValue?["TimeStamp "] {
+                
+                TimeStamp = timeStampDataBase
+               // let timeStampDataBasetoDouble = Double(timeStampDataBase)!
+               // TimeStampV = timeStampDataBasetoDouble
+                 //print(timeStampDataBase)
+                
+            }
+            if let heartBeatFromDataBase = dataBaseValue?["HeartRate"]{
+                
+                
+                let HRDataBaseToInt = Double(heartBeatFromDataBase)!
+                //heartRateV = HRDataBaseToInt
+                heartRateArray.append(HRDataBaseToInt)
+                
+                //print(heartBeatFromDataBase)
+                
+            }
+            
+            
+            //self.chartSetter(xaxis: 9, yaxis: heartRateV)
+            
+           
+        // self.HRLable.text = String(heartRateV)
+            
+          
+            
+            self.theChart(hR: heartRateArray, tS: TimeStamp)
+            
+            
+            
+            
+        }
+        
+        
+        
+    }
+    
+    /*
+    func chartSetter(xaxis: Double, yaxis: Int){
+        
+        
+        
+        ourChart.noDataText = "No Data is provided"
+        
+        var chartArray: [BarChartDataEntry] = []
+        
+        let chartData = BarChartDataEntry(x: xaxis, y: Double(yaxis))
+        
+        
+        chartArray.append(chartData)
+        
+        let chartDataSet = BarChartDataSet(values:chartArray, label: "HeartRate")
+        let barChartDataObj = BarChartData()
+        barChartDataObj.addDataSet(chartDataSet)
+        
+        ourChart.data = barChartDataObj
+        
+        chartDataSet.colors = ChartColorTemplates.colorful()
+        
+        ourChart.animate(xAxisDuration: 2.0, yAxisDuration: 2.0)
+        
+       
+        
+    }*/
+    
+    
+    
+    func theChart(hR: [Double], tS: String){
+        
+        var lineChartEntry = [ChartDataEntry]()
+        
+        for i in 0..<hR.count{
+            
+            icounter = i
+            
+            let values = ChartDataEntry(x: Double(i), y: hR[i])
+            
+            
+            lineChartEntry.append(values)
+            
+            
+            
+            
+            
+        }
+        
+        
+        let line1 = LineChartDataSet(values: lineChartEntry, label: "Heart Rate")
+       
+        
+        
+        if(icounter! > 0 && icounter! < hR.count){
+            
+            previousValue = hR[icounter!-1]
+            currentValue = hR[icounter!]
+            
+            
+            
+            differenceHolder = Int(currentValue!) - Int(previousValue!)
+            if(differenceHolder! >= 30 || differenceHolder! <= -30){
+                
+                
+                flag = flag + 1
+ 
+                
+                if (flag > 4){
+                
+                line1.circleColors = [NSUIColor.red]
+                tsFlagHolder.append(tS)
+                    FlagButton.setTitle("Flags", for: [])
+                    FlagButton.isEnabled = true
+                    FlagButton.tintColor = UIColor.red
+                    
+                    flag = 0
+                }
+                
+                
+            }
+            
+              line1.colors = [NSUIColor.red]
+                let data = LineChartData()
+                data.addDataSet(line1)
+                lineChart1.data = data
+                
+                
+                
+                
+            }
+            
+            
+        }
+    
+    
+  
+    
+    @IBAction func flagButtonIsPressed(_ sender: Any) {
+        
+    
+        
+            performSegue(withIdentifier: "toFlagTableView", sender: self)
+        
+        
+    }
+    
+    
+    @IBAction func getDataButtonPressed(_ sender: Any) {
+        
+        m = monthTextField.text!
+        d = dayTextField.text!
+        y = yearTextField.text!
+        if(m.isEmpty || d.isEmpty || y.isEmpty){
+            
+          getYourHeartActivitesOn.text = "Please enter date"
+            
+        }else{
+            
+            tsFlagHolder = []
+            lineChart1.clear()
+            recievedMessageText.text = ""
+            currentHeartRateLable.text = ""
+            getOldHeartRate(month: m, day: d, year: y)
+            
+            
+        }
+        
+        
+    }
+    
+    func getOldHeartRate(month: String, day: String, year: String){
+        
+        
+        var OldheartRateArray = [Double]()
+        var OldTimeStamp = String()
+        
+        let Oldchild1 = DB.child("\(month)-\(day)-\(year)").observe(.childAdded) { (DataSnapshot) in
+            
+            let OlddataBaseValue = DataSnapshot.value as? Dictionary<String,String>
+            
+            if let OldtimeStampDataBase = OlddataBaseValue?["TimeStamp "] {
+                
+                OldTimeStamp = OldtimeStampDataBase
+                // let timeStampDataBasetoDouble = Double(timeStampDataBase)!
+                // TimeStampV = timeStampDataBasetoDouble
+                //print(timeStampDataBase)
+                
+            }
+            if let OldheartBeatFromDataBase = OlddataBaseValue?["HeartRate"]{
+                
+                
+                let OldHRDataBaseToInt = Double(OldheartBeatFromDataBase)!
+                //heartRateV = HRDataBaseToInt
+                OldheartRateArray.append(OldHRDataBaseToInt)
+                
+                //print(heartBeatFromDataBase)
+                
+            }
+        
+        
+        self.theChart(hR: OldheartRateArray, tS: OldTimeStamp)
+        
+    }
+    
+    
+        
+    }
+    
+    
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        self.view.endEditing(true)
+        
+    }
+    
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        monthTextField.resignFirstResponder()
+        dayTextField.resignFirstResponder()
+        yearTextField.resignFirstResponder()
+       
+        
+        return(true)
+        
+    }
+    
+  
 
+}
 

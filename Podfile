@@ -12,7 +12,17 @@ pod 'Firebase'
 pod 'Firebase/Auth'
 pod 'Firebase/Database'
 pod 'SVProgressHUD'
-pod 'SwiftChart'
+
+#pod 'ChartProgressBar'
+#pod 'ScrollableGraphView'
+#pod 'Highcharts'
+#pod 'SwiftChartView'
+#pod 'JBChartView'
+#pod 'AAInfographics'
+pod 'Charts'
+
+
+
 
 
 end
