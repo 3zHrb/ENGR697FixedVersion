@@ -512,7 +512,8 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                 
                 if (flag > 4){
                 
-                line1.circleColors = [NSUIColor.red]
+                //line1.resetCircleColors(icounter!)
+                    
                 tsFlagHolder.append(tS)
                     FlagButton.setTitle("Flags", for: [])
                     FlagButton.isEnabled = true
@@ -525,8 +526,16 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             }
             
               line1.colors = [NSUIColor.red]
+            
                 let data = LineChartData()
                 data.addDataSet(line1)
+            line1.valueTextColor = UIColor.white
+            lineChart1.tintColor = UIColor.white
+            lineChart1.xAxis.axisLineColor = UIColor.white
+            lineChart1.xAxis.labelTextColor = UIColor.white // this is the one
+            lineChart1.rightAxis.labelTextColor = UIColor.white // the one
+            lineChart1.leftAxis.labelTextColor = UIColor.white // the one
+           
                 lineChart1.data = data
                 
                 
