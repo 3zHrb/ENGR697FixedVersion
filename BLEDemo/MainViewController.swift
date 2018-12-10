@@ -458,8 +458,13 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                         
                     }
                     
-                    var heartRateRetrivedToDouble = Double(heartRateRetrived)
-                    heartRateArray.append(heartRateRetrivedToDouble!)
+                    if let heartRateRetrivedToDouble = Double(heartRateRetrived){
+                    
+                        var toDouble = heartRateRetrivedToDouble
+                        
+                        heartRateArray.append(toDouble)
+                        
+                    }
              
                      self.theChart(hR: heartRateArray)
                     
