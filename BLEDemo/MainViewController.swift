@@ -432,14 +432,19 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                         
                     }
                     
-                   var heartRateRetrivedToDouble = Double(test)
+                    if let heartRateRetrivedToDouble = Double(test){
+                        
+                        var toDouble = heartRateRetrivedToDouble
+                            heartRateArray.append(toDouble)
+                        
+                    }
                     
                      self.tsFlagHolder.append(TimeStamp)
                      self.unique = Array(Set(self.tsFlagHolder))
                     
                    
                     
-                    heartRateArray.append(heartRateRetrivedToDouble!)
+                   
                     
                     self.FlagButton.setTitle("Flags", for: [])
                     self.FlagButton.isEnabled = true
@@ -681,12 +686,18 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                         
                     }
                     
-                    var OldheartRateRetrivedToDouble = Double(Oldtest)
+                    if let OldheartRateRetrivedToDouble = Double(Oldtest){
+                        
+                       var OldToDouble = OldheartRateRetrivedToDouble
+                        
+                        OldheartRateArray.append(OldToDouble)
+                        
+                    }
                     
                     self.tsFlagHolder.append(OldTimeStamp)
                     self.unique = Array(Set(self.tsFlagHolder)) // no needed by it's fine
                     
-                    OldheartRateArray.append(OldheartRateRetrivedToDouble!)
+                    
                     
                     self.FlagButton.setTitle("Flags", for: [])
                     self.FlagButton.isEnabled = true
@@ -705,10 +716,14 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                         
                     }
                     
-                    var OldheartRateRetrivedToDouble = Double(OldheartRateRetrived)
-                    OldheartRateArray.append(OldheartRateRetrivedToDouble!)
+                    if let OldheartRateRetrivedToDouble = Double(OldheartRateRetrived){
+                        
+                        var OldToDouble = OldheartRateRetrivedToDouble
+                        
+                    OldheartRateArray.append(OldToDouble)
                     
                     self.theChart(hR: OldheartRateArray)
+                    }
                     
                 }
                 
