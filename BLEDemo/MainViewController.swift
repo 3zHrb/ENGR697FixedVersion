@@ -47,6 +47,8 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     
     var flag : Int = 0
     
+    var flagClear: Int = 0
+    
     var tsFlagHolder = [String]()
     
     @IBOutlet weak var getDataButton: UIButton!
@@ -283,12 +285,23 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                 if let valueFromBLE = String(data: characteristic.value!, encoding: String.Encoding.utf8){
                 
                 let stringValue = valueFromBLE
+                    flagClear = flagClear + 1
                     
+                    
+                    if(flagClear >= 119){
+                        
+                        
+                        flag = 0
+                        flagClear = 0
+                       
+                        
+                        
+                    }
                     
                     
                     let test = String(stringValue.filter { !"\r\n".contains($0) })
                     
-                    if let stringToInt = Int(test){
+                    if let stringToInt = Int(test){ // no
                         
                         currentTime(theValue: stringToInt)
                     }
@@ -414,6 +427,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             }
             if let heartBeatFromDataBase = dataBaseValue?["HeartRate"]{
                 
+                //cutting and changing here
                 
                 let HRDataBaseToInt = Double(heartBeatFromDataBase)!
                 //heartRateV = HRDataBaseToInt
@@ -443,6 +457,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     }
     
     /*
+    
     func chartSetter(xaxis: Double, yaxis: Int){
         
         
@@ -475,34 +490,18 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     func theChart(hR: [Double], tS: String){
         
         var lineChartEntry = [ChartDataEntry]()
-        
-        for i in 0..<hR.count{
-            
-            icounter = i
-            
-            let values = ChartDataEntry(x: Double(i), y: hR[i])
-            
-            
+    for i in 0..<hR.count{
+        icounter = i
+        let values = ChartDataEntry(x: Double(i), y: hR[i])
             lineChartEntry.append(values)
-            
-            
-            
-            
-            
-        }
-        
-        
+            }
         let line1 = LineChartDataSet(values: lineChartEntry, label: "Heart Rate")
-       
         
-        
-        if(icounter! > 0 && icounter! < hR.count){
+        /*
+       if(icounter! > 0 && icounter! < hR.count){
             
             previousValue = hR[icounter!-1]
             currentValue = hR[icounter!]
-            
-            
-            
             differenceHolder = Int(currentValue!) - Int(previousValue!)
             if(differenceHolder! >= 30 || differenceHolder! <= -30){
                 
@@ -511,40 +510,90 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
  
                 
                 if (flag > 4){
-                
-                //line1.resetCircleColors(icounter!)
+       
                     
-                tsFlagHolder.append(tS)
+        tsFlagHolder.append(tS)
                     FlagButton.setTitle("Flags", for: [])
                     FlagButton.isEnabled = true
                     FlagButton.tintColor = UIColor.red
                     
-                    flag = 0
+                   
+                       flag = 0
                 }
-                
-                
-            }
-            
-              line1.colors = [NSUIColor.red]
-            
-                let data = LineChartData()
-                data.addDataSet(line1)
-            line1.valueTextColor = UIColor.white
-            lineChart1.tintColor = UIColor.white
-            lineChart1.xAxis.axisLineColor = UIColor.white
-            lineChart1.xAxis.labelTextColor = UIColor.white // this is the one
-            lineChart1.rightAxis.labelTextColor = UIColor.white // the one
-            lineChart1.leftAxis.labelTextColor = UIColor.white // the one
-           
-                lineChart1.data = data
-                
-                
-                
-                
-            }
+                }
+        }*/
+        
+        
+        line1.colors = [NSUIColor.red]
+        
+        let data = LineChartData()
+        data.addDataSet(line1)
+        line1.valueTextColor = UIColor.white
+        lineChart1.tintColor = UIColor.white
+        lineChart1.xAxis.axisLineColor = UIColor.white
+        lineChart1.xAxis.labelTextColor = UIColor.white // this is the one
+        lineChart1.rightAxis.labelTextColor = UIColor.white // the one
+        lineChart1.leftAxis.labelTextColor = UIColor.white // the one
+        
+        lineChart1.data = data
             
             
         }
+    
+    
+    
+    func OldtheChart(hR: [Double], tS: String){
+        
+        var lineChartEntry = [ChartDataEntry]()
+        for i in 0..<hR.count{
+            icounter = i
+            let values = ChartDataEntry(x: Double(i), y: hR[i])
+            lineChartEntry.append(values)
+        }
+        let line1 = LineChartDataSet(values: lineChartEntry, label: "Heart Rate")
+        
+        
+         if(icounter! > 0 && icounter! < hR.count){
+         
+         previousValue = hR[icounter!-1]
+         currentValue = hR[icounter!]
+         differenceHolder = Int(currentValue!) - Int(previousValue!)
+         if(differenceHolder! >= 30 || differenceHolder! <= -30){
+         
+         
+         flag = flag + 1
+         
+         
+         if (flag > 4){
+         
+         
+         tsFlagHolder.append(tS)
+         FlagButton.setTitle("Flags", for: [])
+         FlagButton.isEnabled = true
+         FlagButton.tintColor = UIColor.red
+         
+         
+         flag = 0
+         }
+         }
+         }
+        
+        
+        line1.colors = [NSUIColor.red]
+        
+        let data = LineChartData()
+        data.addDataSet(line1)
+        line1.valueTextColor = UIColor.white
+        lineChart1.tintColor = UIColor.white
+        lineChart1.xAxis.axisLineColor = UIColor.white
+        lineChart1.xAxis.labelTextColor = UIColor.white // this is the one
+        lineChart1.rightAxis.labelTextColor = UIColor.white // the one
+        lineChart1.leftAxis.labelTextColor = UIColor.white // the one
+        
+        lineChart1.data = data
+        
+        
+    }
     
     
   
@@ -570,7 +619,10 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             
         }else{
             
+            flag = 0
             tsFlagHolder = []
+            FlagButton.setTitle("", for: [])
+            FlagButton.isEnabled = false
             lineChart1.clear()
             recievedMessageText.text = ""
             currentHeartRateLable.text = ""
@@ -612,7 +664,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             }
         
         
-        self.theChart(hR: OldheartRateArray, tS: OldTimeStamp)
+        self.OldtheChart(hR: OldheartRateArray, tS: OldTimeStamp)
         
     }
     
