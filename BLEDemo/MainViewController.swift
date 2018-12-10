@@ -37,17 +37,17 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     
     //var timer = Timer()
       
-
+    var unique = [String]() // check please
     var previousValue: Double? = nil
     var currentValue: Double? = nil
     var differenceHolder: Int? = nil
     
     
-    var icounter: Int? = nil
+    //var icounter: Int? = nil
     
-    var flag : Int = 0
+    //var flag : Int = 0
     
-    var flagClear: Int = 0
+    //var flagClear: Int = 0
     
     var tsFlagHolder = [String]()
     
@@ -156,7 +156,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
         if(segue.identifier == "toFlagTableView"){
             
             var flagTableView = segue.destination as! FlagTableView
-            flagTableView.TimeStampArray.append(contentsOf: tsFlagHolder)
+            flagTableView.TimeStampArray.append(contentsOf: self.unique)
             
         }
         
@@ -285,32 +285,23 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
                 if let valueFromBLE = String(data: characteristic.value!, encoding: String.Encoding.utf8){
                 
                 let stringValue = valueFromBLE
-                    flagClear = flagClear + 1
-                    
-                    
-                    if(flagClear >= 119){
-                        
-                        
-                        flag = 0
-                        flagClear = 0
-                       
-                        
-                        
-                    }
+                   
                     
                     
                     let test = String(stringValue.filter { !"\r\n".contains($0) })
                     
-                    if let stringToInt = Int(test){ // no
+                    
+                    
+                 
                         
-                        currentTime(theValue: stringToInt)
-                    }
+                        currentTime(theValue: test)
+                    
                     
                     // var toInt = Int(stringValue)
                     
                     
                     
-                    recievedMessageText.text = stringValue
+                    recievedMessageText.text = test
                     
                 }
                 
@@ -386,7 +377,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
         
     }
     
-   @objc func currentTime(theValue: Int){
+   @objc func currentTime(theValue: String){
         
         var date = Date()
         var calendar = Calendar.current
@@ -427,13 +418,52 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             }
             if let heartBeatFromDataBase = dataBaseValue?["HeartRate"]{
                 
+                var heartRateRetrived = heartBeatFromDataBase
+                
+                if(heartRateRetrived.contains("#")){ //maybe a problem here
+                     //cutting and changing here
+                   // heartRateRetrived.remove(at: heartRateRetrived.endIndex) // error my occure
+                    
+                    var test = String(heartRateRetrived.filter { !"#".contains($0) }) // if it works old need to be fixed
+                    
+                    if(test == ""){
+                        
+                        test = "50"
+                        
+                    }
+                    
+                   var heartRateRetrivedToDouble = Double(test)
+                    
+                     self.tsFlagHolder.append(TimeStamp)
+                     self.unique = Array(Set(self.tsFlagHolder))
+                    
+                   
+                    
+                    heartRateArray.append(heartRateRetrivedToDouble!)
+                    
+                    self.FlagButton.setTitle("Flags", for: [])
+                    self.FlagButton.isEnabled = true
+                    self.FlagButton.tintColor = UIColor.red
+                    
+                    self.theChart(hR: heartRateArray)
+                    
+                    
+                }else{
+                
                 //cutting and changing here
-                
-                let HRDataBaseToInt = Double(heartBeatFromDataBase)!
-                //heartRateV = HRDataBaseToInt
-                heartRateArray.append(HRDataBaseToInt)
-                
-                //print(heartBeatFromDataBase)
+                    
+                    if(heartRateRetrived == ""){
+                        
+                        heartRateRetrived = "50"
+                        
+                    }
+                    
+                    var heartRateRetrivedToDouble = Double(heartRateRetrived)
+                    heartRateArray.append(heartRateRetrivedToDouble!)
+             
+                     self.theChart(hR: heartRateArray)
+                    
+                }
                 
             }
             
@@ -445,7 +475,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             
           
             
-            self.theChart(hR: heartRateArray, tS: TimeStamp)
+        
             
             
             
@@ -487,42 +517,15 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     
     
     
-    func theChart(hR: [Double], tS: String){
+    func theChart(hR: [Double]){
         
         var lineChartEntry = [ChartDataEntry]()
     for i in 0..<hR.count{
-        icounter = i
+      
         let values = ChartDataEntry(x: Double(i), y: hR[i])
             lineChartEntry.append(values)
             }
         let line1 = LineChartDataSet(values: lineChartEntry, label: "Heart Rate")
-        
-        /*
-       if(icounter! > 0 && icounter! < hR.count){
-            
-            previousValue = hR[icounter!-1]
-            currentValue = hR[icounter!]
-            differenceHolder = Int(currentValue!) - Int(previousValue!)
-            if(differenceHolder! >= 30 || differenceHolder! <= -30){
-                
-                
-                flag = flag + 1
- 
-                
-                if (flag > 4){
-       
-                    
-        tsFlagHolder.append(tS)
-                    FlagButton.setTitle("Flags", for: [])
-                    FlagButton.isEnabled = true
-                    FlagButton.tintColor = UIColor.red
-                    
-                   
-                       flag = 0
-                }
-                }
-        }*/
-        
         
         line1.colors = [NSUIColor.red]
         
@@ -542,16 +545,17 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
     
     
     
-    func OldtheChart(hR: [Double], tS: String){
+   /* func OldtheChart(hR: [Double], tS: String){
         
         var lineChartEntry = [ChartDataEntry]()
         for i in 0..<hR.count{
-            icounter = i
+           // icounter = i
             let values = ChartDataEntry(x: Double(i), y: hR[i])
             lineChartEntry.append(values)
         }
         let line1 = LineChartDataSet(values: lineChartEntry, label: "Heart Rate")
-        
+
+        /*
         
          if(icounter! > 0 && icounter! < hR.count){
          
@@ -577,7 +581,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
          }
          }
          }
-        
+        */
         
         line1.colors = [NSUIColor.red]
         
@@ -593,7 +597,7 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
         lineChart1.data = data
         
         
-    }
+    }*/
     
     
   
@@ -619,8 +623,10 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             
         }else{
             
-            flag = 0
+           // flag = 0
+          //  FlagTableView.TimeStampArray = []
             tsFlagHolder = []
+            self.unique = []
             FlagButton.setTitle("", for: [])
             FlagButton.isEnabled = false
             lineChart1.clear()
@@ -654,22 +660,59 @@ class MainViewController: UIViewController, CBCentralManagerDelegate, CBPeripher
             }
             if let OldheartBeatFromDataBase = OlddataBaseValue?["HeartRate"]{
                 
+                var OldheartRateRetrived = OldheartBeatFromDataBase
                 
-                let OldHRDataBaseToInt = Double(OldheartBeatFromDataBase)!
-                //heartRateV = HRDataBaseToInt
-                OldheartRateArray.append(OldHRDataBaseToInt)
-                
-                //print(heartBeatFromDataBase)
+                if(OldheartRateRetrived.contains("#")){
+                    //cutting and changing here
+                   // OldheartRateRetrived.remove(at: OldheartRateRetrived.endIndex) // error my occure
+                    
+                     var Oldtest = String(OldheartRateRetrived.filter { !"#".contains($0) })
+                    
+                    
+                    if(Oldtest == ""){
+                        
+                        
+                        Oldtest = "50"
+                        
+                    }
+                    
+                    var OldheartRateRetrivedToDouble = Double(Oldtest)
+                    
+                    self.tsFlagHolder.append(OldTimeStamp)
+                    self.unique = Array(Set(self.tsFlagHolder)) // no needed by it's fine
+                    
+                    OldheartRateArray.append(OldheartRateRetrivedToDouble!)
+                    
+                    self.FlagButton.setTitle("Flags", for: [])
+                    self.FlagButton.isEnabled = true
+                    self.FlagButton.tintColor = UIColor.red
+                    
+                    self.theChart(hR: OldheartRateArray)
+                    
+                    
+                }else{
+                    
+                    //cutting and changing here
+                    
+                    if(OldheartRateRetrived == ""){
+                        
+                        OldheartRateRetrived = "50"
+                        
+                    }
+                    
+                    var OldheartRateRetrivedToDouble = Double(OldheartRateRetrived)
+                    OldheartRateArray.append(OldheartRateRetrivedToDouble!)
+                    
+                    self.theChart(hR: OldheartRateArray)
+                    
+                }
                 
             }
         
         
-        self.OldtheChart(hR: OldheartRateArray, tS: OldTimeStamp)
+       // self.OldtheChart(hR: OldheartRateArray, tS: OldTimeStamp)
         
     }
-    
-    
-        
     }
     
     
